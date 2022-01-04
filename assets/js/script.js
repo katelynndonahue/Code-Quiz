@@ -51,10 +51,16 @@ var startScreen = document.querySelector("#start-screen");
 var quizScreen = document.querySelector("#quiz-screen");
 var endScreen = document.querySelector("#end-screen")
 var timerEl = document.querySelector("#timer");
+var answersEl = document.querySelector("#answers");
+var scoreEl = document.querySelector("#score");
+var submitButton = document.querySelector("#submit-score");
+var initialsEl = document.querySelector("#initials");
 
 // Variables
 var timeLeft = 60;
 var timeInterval;
+var questionIndex = 0;
+var score = 0;
 
 function startGame() {
   startScreen.classList.add("hide");
@@ -66,12 +72,66 @@ function startGame() {
           endGame()
       }
   }, 1000);
+  renderQuestions();
+}
+
+function renderQuestions() {
+    var currentQ = questions[questionIndex];
+
+    var titleElement = document.getElementById("title");
+    titleElement.textContent = currentQ.question;
+
+    answersEl.innerHTML = "";
+
+    currentQ.choices.forEach(function(answer){
+        var answerButton = document.createElement("button");
+        answerButton.setAttribute("value", answer);
+        answerButton.textContent = answer;
+
+        answerButton.onclick = checkAnswer
+
+        answersEl.appendChild(answerButton);
+    })
+}
+
+function checkAnswer() {
+    if (this.value !== questions[questionIndex].answer) {
+        timeLeft -= 10
+    } else {
+        score++
+    }
+
+    questionIndex++;
+
+    if (questionIndex === questions.length) {
+        endGame();
+    } else {
+        renderQuestions()
+    }
 }
 
 function endGame() {
     clearInterval(timeInterval);
     quizScreen.classList.add("hide");
-    endScreen.classList.remove("hide")
+    endScreen.classList.remove("hide");
+    scoreEl.textContent = score;
 }
+
+
+function saveScore() {
+    var initials = initialsEl.value;
+
+    var newScore = {
+        initials,
+        score
+    }
+    
+    var allScores = JSON.parse(window.localStorage.getItem("highscores")) || [];
+
+    allScores.push(newScore);
+    window.localStorage.setItem("highscores", JSON.stringify(allScores));
+}
+
 // event listeners
 startBtn.addEventListener("click", startGame);
+submitButton.addEventListener("click", saveScore)

@@ -1,5 +1,6 @@
 body {background-color: rgb(138, 120, 123);
-font-family: Georgia, 'Times New Roman', Times, serif; align-content: center;}
+font-family: Georgia, 'Times New Roman', Times, serif; 
+align-content: center;}
 
 .hide {
     display: none;
